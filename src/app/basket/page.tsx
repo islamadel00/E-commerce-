@@ -1,0 +1,174 @@
+"use client";
+import { useCart } from "@/context/CartContext";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export default function BasketPage() {
+  const { cart, loading, updateProductQuantity, removeFromCart } = useCart();
+  const { data: session } = useSession();
+
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Shopping Basket</h1>
+        <div className="text-center py-12">
+          <ShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <p className="text-gray-600 mb-4">Please sign in to view your basket</p>
+          <Button asChild>
+            <Link href="/signin">Sign In</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Shopping Basket</h1>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading your basket...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cart || cart.products.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Shopping Basket</h1>
+        <div className="text-center py-12">
+          <ShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <p className="text-gray-600 mb-4">Your basket is empty</p>
+          <Button asChild>
+            <Link href="/items">Continue Shopping</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Shopping Basket</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Cart Items */}
+        <div className="lg:col-span-2">
+          <div className="space-y-4">
+            {cart.products.map((item) => (
+              <div key={item.product._id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                <div className="flex items-center gap-4">
+                  {/* Product Image */}
+                  <div className="relative w-20 h-20 flex-shrink-0">
+                    <Image
+                      src={item.product.imageCover}
+                      alt={item.product.title}
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
+                  
+                  {/* Product Details */}
+                  <div className="flex-grow">
+                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                      {item.product.title}
+                    </h3>
+                    
+                    {/* Price Display - Different Style */}
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Unit Price:</span>
+                        <span className="text-lg font-bold text-red-600">
+                          ${item.price}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Total:</span>
+                        <span className="text-xl font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                          ${(item.price * item.count).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-500">Quantity:</span>
+                      <div className="flex items-center border border-gray-300 rounded-md">
+                        <button
+                          onClick={() => updateProductQuantity(item.product._id, item.count - 1)}
+                          className="p-2 hover:bg-gray-100 transition-colors"
+                          disabled={item.count <= 1}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="px-4 py-2 font-semibold min-w-[3rem] text-center">
+                          {item.count}
+                        </span>
+                        <button
+                          onClick={() => updateProductQuantity(item.product._id, item.count + 1)}
+                          className="p-2 hover:bg-gray-100 transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => removeFromCart(item.product._id)}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                    title="Remove from cart"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Order Summary */}
+        <div className="lg:col-span-1">
+          <div className="bg-gray-50 rounded-lg p-6 sticky top-4">
+            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal ({cart.products.length} items):</span>
+                <span className="font-semibold">${cart.totalCartPrice}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Shipping:</span>
+                <span className="font-semibold text-green-600">FREE</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Tax:</span>
+                <span className="font-semibold">$0.00</span>
+              </div>
+              <hr className="border-gray-300" />
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total:</span>
+                <span className="text-2xl text-blue-600">${cart.totalCartPrice}</span>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                <Link href="/payment">Proceed to Checkout</Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/items">Continue Shopping</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
