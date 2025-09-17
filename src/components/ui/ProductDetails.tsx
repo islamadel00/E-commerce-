@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Product } from "@/interfaces/product.interface";
 import Image from "next/image";
 import { Star, Heart, Minus, Plus, Truck, RotateCcw } from "lucide-react";
-import type { Swiper as SwiperType } from 'swiper';
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ const renderStars = (rating: number) => {
 };
 
 export default function ProductDetails({ product }: { product: Product }) {
-  const [, ] = useState<SwiperType | null>(null);
+  // Removed unused Swiper state
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('blue');
   const [selectedSize, setSelectedSize] = useState('S');
