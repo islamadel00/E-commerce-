@@ -10,7 +10,6 @@ import SpeakerSection from "@/components/layout/SpeakerSection";
 import OurProducts from "@/components/layout/OurProducts";
 import NewArrivalsSection from "@/components/layout/NewArrivalsSection";
 import Features from "@/components/layout/Features";
-import PageLoading from "@/components/ui/PageLoading";
 
 export default async function Landing() {
   let items: ProductResponse | null = null;
@@ -23,20 +22,19 @@ export default async function Landing() {
     } else {
       console.error("An unknown error occurred");
     }
+    // Return empty data instead of showing loading
+    items = {
+      data: [],
+      metadata: {
+        currentPage: 1,
+        limit: 10,
+        numberOfPages: 1
+      },
+      results: 0
+    };
   }
 
   const products = items?.data || [];
-
-  if (!items) {
-    return (
-      <PageLoading
-        title="Loading Products..."
-        subtitle="Please wait while we fetch the latest products for you"
-        showProgress={true}
-        progress={75}
-      />
-    );
-  }
 
   return (
     <>
