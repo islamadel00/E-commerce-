@@ -33,17 +33,31 @@ export default function SigninPage() {
   }, [status, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
-    const result = await signIn('credentials', {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
 
-    if (result?.error) {
-      toast.error(result.error);
-    } else {
-      toast.success('Logged in successfully!');
-      router.push('/');
+      if (result?.error) {
+        console.error('Sign in error:', result.error);
+        if (result.error === 'ConfigurationError') {
+          toast.error('Server configuration error. Please try again later.');
+        } else if (result.error === 'CredentialsSignin') {
+          toast.error('Invalid email or password');
+        } else {
+          toast.error('Login failed. Please try again.');
+        }
+      } else if (result?.ok) {
+        toast.success('Logged in successfully!');
+        router.push('/');
+      } else {
+        toast.error('Login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
