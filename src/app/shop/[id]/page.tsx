@@ -6,9 +6,10 @@ import Item from "@/components/ui/Item";
 export default async function ShopItemPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { data: product } = await fetchProductById(params.id);
+  const { id } = await params;
+  const { data: product } = await fetchProductById(id);
   const { data: relatedProducts } = await fetchProducts({ page: 1 });
 
   return (

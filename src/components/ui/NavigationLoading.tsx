@@ -10,9 +10,16 @@ interface NavigationLoadingProps {
 export default function NavigationLoading({ children }: NavigationLoadingProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // Simulate loading progress
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
@@ -22,9 +29,11 @@ export default function NavigationLoading({ children }: NavigationLoadingProps) 
     }, 100);
 
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     // Show loading when pathname changes
     setIsLoading(true);
     setLoadingProgress(0);
@@ -39,12 +48,12 @@ export default function NavigationLoading({ children }: NavigationLoadingProps) 
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, isClient]);
 
   return (
     <>
       {children}
-      {isLoading && (
+      {isClient && isLoading && (
         <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
           <div
             className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-out"

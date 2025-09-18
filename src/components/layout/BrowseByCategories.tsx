@@ -27,7 +27,7 @@ const categories = [
 function CategoryItem({ name, icon }: { name: string; icon: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center bg-gray-50 rounded-lg p-6 shadow-sm cursor-pointer hover:shadow-md transition">
-      <div className="mb-3 ">{icon}</div>
+      <div className="mb-3">{icon}</div>
       <p className="text-sm font-medium text-center">{name}</p>
     </div>
   );
@@ -39,9 +39,12 @@ export default function BrowseByCategories() {
 
   return (
     <section className="section-padding">
+      {/* Title + Navigation */}
       <div className="flex items-center justify-between mt-4 mb-8">
-        <h2 className="text-3xl font-semibold">Browse by Category</h2>
-        <div className="flex gap-2">
+        <h2 className="text-2xl sm:text-3xl font-semibold">
+          Browse by Category
+        </h2>
+        <div className="hidden sm:flex gap-2">
           <div
             ref={swiperNavPrevRef}
             className="bg-gray-200 p-2 rounded-full cursor-pointer"
@@ -57,10 +60,17 @@ export default function BrowseByCategories() {
         </div>
       </div>
 
+      {/* Swiper */}
       <Swiper
         modules={[Navigation]}
         spaceBetween={20}
-        slidesPerView={6}
+        slidesPerView={2} // default for mobile
+        breakpoints={{
+          640: { slidesPerView: 3 }, // sm
+          768: { slidesPerView: 4 }, // md
+          1024: { slidesPerView: 5 }, // lg
+          1280: { slidesPerView: 6 }, // xl
+        }}
         navigation={{
           prevEl: swiperNavPrevRef.current,
           nextEl: swiperNavNextRef.current,

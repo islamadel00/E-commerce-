@@ -7,10 +7,11 @@ import Item from "@/components/ui/Item";
 export default async function LabelPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { data: brand } = await fetchBrandById(params.id);
-  const { data: products } = await fetchProducts({ brandId: params.id });
+  const { id } = await params;
+  const { data: brand } = await fetchBrandById(id);
+  const { data: products } = await fetchProducts({ brandId: id });
 
   return (
     <div className="wrapper mx-auto px-[135px] py-8">
